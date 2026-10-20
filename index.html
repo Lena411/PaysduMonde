@@ -1,16 +1,61 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Quiz des Pays du Monde</title>
-  <meta http-equiv="refresh" content="0; url=index1.html">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123754">
+  <link rel="icon" href="data:,">
+  <title>Pays du Monde · Choisir une version</title>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 50px; background: #dff3ff; }
-    a { color: #2563eb; font-size: 1.2rem; }
+    :root{--blue:#24658c;--navy:#123754;--muted:#526b7d}
+    *{box-sizing:border-box}
+    body{margin:0;background:#dff2fc;color:var(--navy);font:16px/1.6 system-ui,sans-serif;min-height:100vh}
+    header{background:var(--navy);color:white;padding:24px max(24px,calc((100% - 1100px)/2));font:600 24px Georgia,serif}
+    main{max-width:1150px;margin:auto;padding:64px 24px 32px}
+    .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.15em;color:var(--blue);font-weight:750}
+    h1{font:500 clamp(32px,5vw,52px)/1.15 Georgia,serif;letter-spacing:-.04em;margin:16px 0 20px}
+    .intro{max-width:650px;color:var(--muted);margin-bottom:36px}
+    .versions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+    article{background:white;border:1px solid #c7dde9;border-radius:16px;padding:28px;display:flex;flex-direction:column;min-width:0}
+    article.current{border:2px solid var(--blue);padding:27px}
+    .tag{font-size:12px;font-weight:750;letter-spacing:.08em;color:var(--blue);text-transform:uppercase}
+    h2{font:500 28px/1.2 Georgia,serif;margin:14px 0}
+    article p{color:var(--muted);font-size:14px;margin:0 0 24px;flex:1}
+    .button{display:flex;justify-content:center;align-items:center;min-height:48px;padding:10px 14px;border:1px solid #bfd6e5;border-radius:8px;color:var(--navy);font-size:14px;font-weight:750;text-decoration:none}
+    .current .button{background:var(--blue);color:white;border-color:var(--blue)}
+    .button:hover{background:#edf6fc}
+    .current .button:hover{background:#164b6b}
+    a:focus-visible{outline:3px solid #3387bb;outline-offset:4px}
+    .note{font-size:13px;color:var(--muted);margin-top:28px}
+    footer{max-width:1150px;margin:auto;padding:24px;color:var(--muted);font-size:12px}
+    @media(max-width:700px){main{padding-top:36px}.versions{grid-template-columns:1fr;gap:16px}article,article.current{padding:22px}h2{font-size:24px}article p{margin-bottom:18px}header{font-size:22px;padding:20px 24px}}
   </style>
 </head>
 <body>
-  <p>Redirection...</p>
-  <p>Si rien ne se passe, <a href="index1.html">cliquez ici</a></p>
+  <header>Pays du Monde</header>
+  <main>
+    <p class="eyebrow">Un quiz qui évolue</p>
+    <h1>Un projet, trois étapes.</h1>
+    <p class="intro">Retrouvez les pays du monde et suivez l’évolution du site. La V3 est la version la plus récente ; les deux premières restent accessibles pour comparer les progrès.</p>
+    <div class="versions">
+      <article class="current">
+        <span class="tag">Version 3 · La plus récente</span><h2>Le nouveau défi</h2>
+        <p>15 minutes pour le monde, 10 minutes par continent. Carte GeoJSON, affichage responsive et bilan de fin de partie.</p>
+        <a class="button" href="./index3.html">Jouer à la V3 →</a>
+      </article>
+      <article>
+        <span class="tag">Version 1</span><h2>Les premiers pas</h2>
+        <p>La base du jeu : écrire des noms de pays, remplir la carte et suivre son score.</p>
+        <a class="button" href="https://lena411.github.io/PaysduMonde/index0.html">Voir la V1</a>
+      </article>
+      <article>
+        <span class="tag">Version 2</span><h2>Aller plus loin</h2>
+        <p>Le fond bleu clair, les indices et les niveaux pour accompagner la progression.</p>
+        <a class="button" href="https://lena411.github.io/PaysduMonde/index1.html">Voir la V2</a>
+      </article>
+    </div>
+    <p class="note">La V3 fonctionne dans un seul fichier HTML : sa carte et son code sont intégrés, sans dossier supplémentaire à importer.</p>
+  </main>
+  <footer>Projet de géographie · Historique des versions</footer>
 </body>
 </html>
