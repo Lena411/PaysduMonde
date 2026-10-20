@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123754">
+  <link rel="icon" href="data:,">
+  <meta name="description" content="Retrouvez les pays du monde en 15 minutes ou entraînez-vous sur un continent en 10 minutes.">
+  <title>Pays du Monde · V3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./v3/style.css">
+  <script defer src="./v3/vendor/d3.min.js"></script>
+  <script defer src="./v3/vendor/polygon-clipping.min.js"></script>
+  <script defer src="./v3/data/pays-jeu.js"></script>
+  <script defer src="./v3/data/pays-geojson.js"></script>
+  <script defer src="./v3/carte.js"></script>
+  <script defer src="./v3/jeu.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#gameTitle">Aller au jeu</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./index3.html" aria-label="Pays du Monde, accueil V3">
+        <span class="brand-orbit" aria-hidden="true">◎</span>
+        <span>Pays du Monde</span>
+        <span class="version">V3</span>
+      </a>
+      <button class="header-link" id="rulesBtn" type="button">Les règles <span aria-hidden="true">↗</span></button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="page-heading" aria-label="Présentation">
+      <div><p class="eyebrow">Le quiz de géographie</p><h1 id="gameTitle" tabindex="-1">Le monde vous attend.</h1></div>
+      <p class="intro-note">Un pays à la fois.<br>Jusqu’où irez-vous ?</p>
+    </section>
+
+    <nav class="continent-nav" aria-label="Choisir une région">
+      <button type="button" data-mode="monde" aria-pressed="true">Monde <span>15 min</span></button>
+      <button type="button" data-mode="europe" aria-pressed="false">Europe</button>
+      <button type="button" data-mode="asie" aria-pressed="false">Asie</button>
+      <button type="button" data-mode="afrique" aria-pressed="false">Afrique</button>
+      <button type="button" data-mode="amerique" aria-pressed="false">Amériques</button>
+      <button type="button" data-mode="oceanie" aria-pressed="false">Océanie</button>
+    </nav>
+
+    <section id="gameScreen" aria-label="Partie">
+      <div class="round-heading">
+        <div><h2 id="regionTitle">Pays du monde</h2><span class="muted" id="roundStatus">À vous de lancer l’exploration</span></div>
+        <div class="timer-wrap" id="timerWrap"><span class="timer-icon" aria-hidden="true">◷</span><div><span class="timer-label">Temps restant</span><span id="timer" role="timer" aria-label="Temps restant">15:00</span></div></div>
+      </div>
+
+      <div class="game-grid">
+        <section class="map-card" aria-labelledby="mapTitle">
+          <div class="card-bar"><div><h3 id="mapTitle">Votre terrain de jeu</h3><span class="map-tag">Carte GeoJSON</span></div>
+            <div class="map-controls" aria-label="Commandes de la carte">
+              <button type="button" id="zoomIn" aria-label="Agrandir la carte">+</button>
+              <button type="button" id="zoomOut" aria-label="Réduire la carte">−</button>
+              <button type="button" id="fitMap" aria-label="Recentrer la carte" title="Recentrer">⌖</button>
+            </div>
+          </div>
+          <div id="mapViewport" class="map-viewport">
+            <svg id="worldMap" role="img" aria-labelledby="mapDescription"><title id="mapDescription">Carte des pays à trouver</title></svg>
+            <span id="mapTooltip" class="map-tooltip" hidden></span>
+          </div>
+          <div class="map-bottom">
+            <div class="legend"><span><i class="dot todo"></i> À trouver</span><span><i class="dot found"></i> Trouvé</span><span id="missingLegend" hidden><i class="dot missed"></i> Manqué</span></div>
+            <p>Zoomez pour explorer · Les petits pays sont aussi signalés par un point.</p>
+          </div>
+        </section>
+
+        <section class="play-card" aria-labelledby="playTitle">
+          <div class="card-bar"><h3 id="playTitle">À vous de jouer</h3><span id="phaseBadge" class="state-badge">Prêt ?</span></div>
+          <div class="play-content">
+            <div class="score-line"><div><span id="foundCount" class="score">0</span><span class="score-total"> / <span id="totalCount">197</span></span></div><span id="percentage" class="percent">0 %</span></div>
+            <div class="progress-track" role="progressbar" aria-label="Pays trouvés" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><div id="progressFill"></div></div>
+            <p class="remaining"><span><span id="remainingCount">197</span> pays à découvrir</span><span id="levelName">Débutant</span></p>
+            <form id="answerForm">
+              <label for="countryInput">Quel pays avez-vous en tête ?</label>
+              <div class="answer-row"><input id="countryInput" name="country" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Ex. : France" disabled><button class="primary submit" type="submit" id="validateBtn" disabled aria-label="Valider le pays">↵</button></div>
+              <p class="input-help">Validez avec Entrée. Accents et tirets facultatifs.</p>
+            </form>
+            <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+            <div id="hintBox" class="hint-box" role="status" hidden></div>
+            <div class="action-row"><button id="hintBtn" class="secondary" type="button" disabled>Un indice <span id="hintCount">0</span></button><button id="giveUpBtn" class="text-button" type="button" disabled>Terminer</button></div>
+            <button id="startRoundBtn" class="primary full" type="button">Commencer la partie</button>
+            <button id="restartBtn" class="secondary full" type="button" hidden>Recommencer</button>
+            <button id="backToResults" class="primary full" type="button" hidden>Voir mes résultats</button>
+          </div>
+        </section>
+
+        <section class="collection-card" aria-labelledby="collectionTitle">
+          <div class="card-bar"><h3 id="collectionTitle">Votre collection</h3><span id="collectionCount" class="count-badge">0</span></div>
+          <p id="emptyCollection" class="empty-collection">Les pays trouvés s’ajouteront ici.<br>Le premier n’attend que vous.</p>
+          <ul id="foundList" class="country-list" aria-label="Pays trouvés"></ul>
+          <details id="missingDetails" hidden><summary>Les pays à revoir (<span id="missingCount">0</span>)</summary><ul id="missingList" class="country-list missing-list"></ul></details>
+        </section>
+      </div>
+    </section>
+
+    <section id="resultsScreen" class="results-screen" aria-labelledby="resultsTitle" hidden>
+      <div class="results-card">
+        <p class="eyebrow" id="resultsReason">Temps écoulé</p>
+        <h2 id="resultsTitle" tabindex="-1">L’exploration est terminée.</h2>
+        <p class="results-intro" id="resultsIntro">Chaque pays trouvé est un pas de plus.</p>
+        <div class="result-metrics">
+          <div><span class="result-value" id="resultFound">0</span><span>Pays trouvés sur <b id="resultTotal">197</b></span></div>
+          <div><span class="result-value" id="resultPercent">0 %</span><span>de réussite</span></div>
+          <div><span class="result-value" id="resultTime">15:00</span><span>de jeu</span></div>
+        </div>
+        <div class="result-meta"><span id="resultMode">Monde</span><span id="resultHints">0 indice utilisé</span><span id="resultLevel">Débutant</span></div>
+        <div class="result-actions"><button type="button" id="replayBtn" class="primary">Rejouer ce mode</button><button type="button" id="reviewBtn" class="secondary">Revoir la carte et les réponses</button></div>
+        <button type="button" id="chooseModeBtn" class="text-button">Explorer un autre continent ↗</button>
+      </div>
+    </section>
+
+    <p id="fatalError" class="fatal-error" role="alert" hidden>La carte n’a pas pu se charger. Vérifiez que le dossier <code>v3</code> est bien à côté d’<code>index3.html</code>, puis rechargez la page.</p>
+    <footer class="site-footer">
+      <span>Un petit tour du monde, un grand pas en géographie.</span>
+      <span>Projet V3 · <button id="aboutMapBtn" type="button">À propos de la carte</button></span>
+    </footer>
+  </main>
+
+  <dialog id="rulesDialog" class="modal" aria-labelledby="rulesTitle">
+    <div class="modal-top"><span class="eyebrow">Avant le départ</span><button type="button" id="closeRules" class="icon-button" aria-label="Fermer les règles" hidden>×</button></div>
+    <h2 id="rulesTitle">Un monde à retrouver.</h2>
+    <p>Vous devez trouver le plus de pays en <strong>15 minutes</strong>. Vous pouvez choisir de vous améliorer dans les continents, mais seulement en <strong>10 minutes</strong>.</p>
+    <div class="rule-steps"><p><span>01</span> Choisissez votre terrain de jeu.</p><p><span>02</span> Écrivez les pays : ils deviennent verts.</p><p><span>03</span> À la fin du chrono, découvrez votre score.</p></div>
+    <div id="rulesModePicker"><label for="modeSelect">Votre défi</label><select id="modeSelect"><option value="monde">Monde · 15 minutes</option><option value="europe">Europe · 10 minutes</option><option value="asie">Asie · 10 minutes</option><option value="afrique">Afrique · 10 minutes</option><option value="amerique">Amériques · 10 minutes</option><option value="oceanie">Océanie · 10 minutes</option></select><div class="challenge-summary"><span id="rulesCount">197 pays</span><span id="rulesTime">15 minutes</span></div></div>
+    <button id="goBtn" class="primary full go-button" type="button">Prêt ? GO ! <span aria-hidden="true">→</span></button>
+    <p class="modal-note" id="rulesNote">Le chrono commence uniquement au clic sur GO !</p>
+  </dialog>
+
+  <dialog id="confirmDialog" class="modal small-modal" aria-labelledby="confirmTitle">
+    <p class="eyebrow">Partie en cours</p><h2 id="confirmTitle">Changer de cap ?</h2><p id="confirmText">Cette action effacera la partie actuelle. Le chrono continue pendant votre choix.</p>
+    <div class="result-actions"><button id="cancelConfirm" type="button" class="secondary">Garder ma partie</button><button id="acceptConfirm" type="button" class="primary">Oui, continuer</button></div>
+  </dialog>
+
+  <dialog id="aboutDialog" class="modal" aria-labelledby="aboutTitle">
+    <div class="modal-top"><span class="eyebrow">Sous la carte</span><button id="closeAbout" type="button" class="icon-button" aria-label="Fermer">×</button></div>
+    <h2 id="aboutTitle">Une carte, plusieurs regards.</h2>
+    <p>Les données sont en GeoJSON, issues de Natural Earth à l’échelle 1:50 millions et simplifiées pour ce jeu. Les contours sont généralisés ; un point facilite le repérage des petits pays.</p>
+    <p>Le quiz comprend 197 réponses : les 193 États membres de l’ONU, le Vatican, la Palestine, le Kosovo et Taïwan. Ce choix ludique n’exprime pas de position sur leur statut.</p>
+    <p>Pour conserver les modes précédents, Russie, Turquie et Chypre sont classées en Europe ; Arménie, Azerbaïdjan et Géorgie en Asie. Les pays transcontinentaux sont recadrés dans la région visible. Les territoires non proposés sont dessinés en gris pâle.</p>
+    <p>Les cadrages sont recalculés selon l’écran. En Océanie, la carte est centrée sur le Pacifique pour garder les archipels des deux côtés du méridien 180° ensemble.</p>
+    <p class="source-note">Données : <a href="https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_50m_admin_0_countries.geojson" target="_blank" rel="noopener noreferrer">Natural Earth</a>. Projection et dessin : <a href="https://d3js.org/d3-geo/projection" target="_blank" rel="noopener noreferrer">D3 Geo</a>. Liens complets dans le fichier README-V3.md.</p>
+  </dialog>
+  <noscript><p class="fatal-error">Activez JavaScript pour jouer à ce quiz.</p></noscript>
+</body>
+</html>
