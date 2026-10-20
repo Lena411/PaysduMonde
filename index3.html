@@ -10,13 +10,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./v3/style.css">
-  <script defer src="./v3/vendor/d3.min.js"></script>
-  <script defer src="./v3/vendor/polygon-clipping.min.js"></script>
-  <script defer src="./v3/data/pays-jeu.js"></script>
-  <script defer src="./v3/data/pays-geojson.js"></script>
-  <script defer src="./v3/carte.js"></script>
-  <script defer src="./v3/jeu.js"></script>
+  <!-- Correctif GitHub : tous les fichiers déposés sont à côté de cette page. -->
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="./d3.min.js"></script>
+  <script defer src="./polygon-clipping.min.js"></script>
+  <script defer src="./pays-jeu.js"></script>
+  <script defer src="./pays-geojson.js"></script>
+  <script defer src="./carte.js"></script>
+  <script defer src="./jeu.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#gameTitle">Aller au jeu</a>
@@ -116,7 +117,7 @@
       </div>
     </section>
 
-    <p id="fatalError" class="fatal-error" role="alert" hidden>La carte n’a pas pu se charger. Vérifiez que le dossier <code>v3</code> est bien à côté d’<code>index3.html</code>, puis rechargez la page.</p>
+    <p id="fatalError" class="fatal-error" role="alert" hidden>La carte n’a pas pu se charger. Vérifiez que les fichiers JavaScript et <code>style.css</code> sont bien à côté d’<code>index3.html</code>, puis rechargez la page.</p>
     <footer class="site-footer">
       <span>Un petit tour du monde, un grand pas en géographie.</span>
       <span>Projet V3 · <button id="aboutMapBtn" type="button">À propos de la carte</button></span>
